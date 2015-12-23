@@ -64,7 +64,7 @@ class MainTVC: UITableViewController, NSFetchedResultsControllerDelegate {
     override func tableView(tableView: UITableView, cellForRowAtIndexPath indexPath: NSIndexPath) -> UITableViewCell {
         let cell = tableView.dequeueReusableCellWithIdentifier("cell", forIndexPath: indexPath)
 
-        // Configure the cell...
+        // Configure the cell
         cell.imageView?.layer.masksToBounds = true;
         cell.imageView?.layer.cornerRadius = CGRectGetWidth((cell.imageView?.bounds)!)/1
 
