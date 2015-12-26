@@ -11,12 +11,11 @@ import UIKit
 class Book {
     var title: String
     var isbn: String
-    var authors: String
+    var authors: [String]
     var imageUrl: String?
     var images: UIImage?
 
-    // init
-    init(title: String, authors: String, isbn: String, imageUrl: String?) {
+    init(title: String, authors: [String], isbn: String, imageUrl: String?) {
         self.title = title
         self.authors = authors
         self.isbn = isbn

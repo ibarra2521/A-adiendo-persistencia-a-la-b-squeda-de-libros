@@ -25,19 +25,19 @@ class ParsingHelper: NSObject {
             let dictionary1 = json as! NSDictionary
             
             let isbn = "ISBN:" + isbnBook
+            var author = [String]()
             if dictionary1[isbn] != nil {
                 let dictionary2 = dictionary1[isbn] as! NSDictionary
                 
                 let title = dictionary2["title"] as! NSString as String
 
-                let responseData: NSArray = dictionary2.valueForKey("authors") as! NSArray
-                var author = ""
-                for currentAuthor in responseData {
-                    let cAuthor: NSDictionary = currentAuthor as!NSDictionary;
-                    author +=  cAuthor.valueForKey("name") as! String + " - "
+                let responseData: NSArray? = dictionary2.valueForKey("authors") as? NSArray
+                if responseData != nil {
+                    for currentAuthor in responseData! {
+                        let cAuthor: NSDictionary = currentAuthor as!NSDictionary;
+                        author.append(cAuthor.valueForKey("name") as! String)
+                    }
                 }
-                let authorTemp = author.substringToIndex(author.endIndex.predecessor())
-                author = authorTemp.substringToIndex(authorTemp.endIndex.predecessor())
                 
                 let image: String? = dictionary2.valueForKey("cover")?.valueForKey("medium") as? String
                 dispatch_async(dispatch_get_main_queue(),{
@@ -46,7 +46,7 @@ class ParsingHelper: NSObject {
                 });
                 
             } else {
-                let book = Book(title: "", authors: "", isbn: "", imageUrl: "")
+                let book = Book(title: "", authors: author, isbn: "", imageUrl: "")
                 self.delegate!.parsingHelper(book)
             }
 

@@ -25,7 +25,17 @@ class SearchDetailVC: UIViewController, NSFetchedResultsControllerDelegate, Webs
         super.viewDidLoad()
         txtfSearchBook.clearButtonMode = .WhileEditing
         self.connection.delegate = self
+        
         if book != nil {
+            let authorEntity = book!.valueForKey("has") as! Set<NSObject>
+            var authors = ""
+            for authorTemp in authorEntity {
+                authors += authorTemp.valueForKey("name") as! String + " - "
+            }
+            if authors.characters.count > 1 {
+                authors = getAuthorString(authors)
+            }
+            book?.authors = authors
             lblTitle.text = book?.title
             lblAuthors.text = book?.authors
             txtfSearchBook.text = book?.isbn
@@ -69,16 +79,43 @@ class SearchDetailVC: UIViewController, NSFetchedResultsControllerDelegate, Webs
         }
     }
 
+    func createAuthorEntity(authors: [String]) -> Set<NSObject> {
+        var entities = Set<NSObject>()
+        for author in authors {
+            let entityAuthor = NSEntityDescription.insertNewObjectForEntityForName("AuthorEntity", inManagedObjectContext: managedObjectContext)
+            entityAuthor.setValue(author, forKey: "name")
+            entities.insert(entityAuthor)
+        }
+        return entities
+    }
+    
+    func existsThisBook() -> Bool{
+        let entityBook = NSEntityDescription.entityForName("BookEntity", inManagedObjectContext: managedObjectContext)
+        let request = entityBook?.managedObjectModel.fetchRequestFromTemplateWithName("requestBook", substitutionVariables: ["isbn": txtfSearchBook.text!])
+        do {
+            let entityBook2 = try managedObjectContext.executeFetchRequest(request!)
+            if entityBook2.count > 0 {
+                txtfSearchBook.text = nil
+                return true
+            }else {
+                return false
+            }
+        }catch{
+            abort()
+        }
+    }
+    
+    
     func createNewBook() {
-        let entityDescription = NSEntityDescription.entityForName("BookEntity", inManagedObjectContext: managedObjectContext)
-        let book = BookEntity(entity: entityDescription!, insertIntoManagedObjectContext: managedObjectContext)
-        book.title = lblTitle.text
-        book.isbn = txtfSearchBook.text
-        book.authors = lblAuthors.text
-        book.image = UIImagePNGRepresentation(imgvCover.image!)
+        let newEntitySection = NSEntityDescription.insertNewObjectForEntityForName("BookEntity", inManagedObjectContext: managedObjectContext)
+        newEntitySection.setValue(lblTitle.text, forKey: "title")
+        newEntitySection.setValue(txtfSearchBook.text, forKey: "isbn")
+        newEntitySection.setValue(lblAuthors.text, forKey: "authors")
+        newEntitySection.setValue(UIImagePNGRepresentation(imgvCover.image!), forKey: "image")
+        newEntitySection.setValue(createAuthorEntity(books[books.count-1].authors), forKey: "has")
         do {
             try managedObjectContext.save()
-        }catch {
+        }catch{
             abort()
         }
     }
@@ -95,19 +132,27 @@ class SearchDetailVC: UIViewController, NSFetchedResultsControllerDelegate, Webs
         if book.isbn != "" {
             books.append(book)
             self.lblTitle.text = book.title
-            self.lblAuthors.text = book.authors
+            var author = ""
+            for currentAuthor in book.authors {
+                    author += currentAuthor + " - "
+            }
+            self.lblAuthors.text = getAuthorString(author)
             
             if book.imageUrl != nil {
                 dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), {
                     let imageData = NSData(contentsOfURL: NSURL(string:book.imageUrl!)!);
                     dispatch_async(dispatch_get_main_queue(), {
                         self.imgvCover.image = UIImage(data: imageData!)
-                        self.createNewBook()
+                        if self.existsThisBook() == false {
+                            self.createNewBook()
+                        }
                     })
                 })
             }else {
                 self.imgvCover.image = UIImage(named: "no found")
-                self.createNewBook()
+                if self.existsThisBook() == false {
+                    self.createNewBook()
+                }
             }
         }else {
             showAlertMessage("MESSAGE!!!", message: "ISBN not found", owner: self)
@@ -119,5 +164,13 @@ class SearchDetailVC: UIViewController, NSFetchedResultsControllerDelegate, Webs
         self.lblTitle.text = ""
         self.lblAuthors.text = ""
         self.imgvCover.image = UIImage(named: "no found")
+    }
+    
+    func getAuthorString (var authorString: String) -> String {
+        if authorString.characters.count > 1 {
+            let authorTemp = authorString.substringToIndex(authorString.endIndex.predecessor())
+            authorString = authorTemp.substringToIndex(authorTemp.endIndex.predecessor())
+        }
+        return authorString
     }
 }

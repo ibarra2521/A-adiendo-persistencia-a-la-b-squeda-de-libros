@@ -1,13 +1,21 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
 <model userDefinedModelVersionIdentifier="" type="com.apple.IDECoreDataModeler.DataModel" documentVersion="1.0" lastSavedToolsVersion="9525" systemVersion="15C50" minimumToolsVersion="Automatic">
+    <entity name="AuthorEntity" syncable="YES">
+        <attribute name="name" optional="YES" attributeType="String" syncable="YES"/>
+        <relationship name="belongs" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="BookEntity" inverseName="has" inverseEntity="BookEntity" syncable="YES"/>
+    </entity>
     <entity name="BookEntity" representedClassName=".BookEntity" syncable="YES">
         <attribute name="authors" optional="YES" attributeType="String" syncable="YES"/>
         <attribute name="image" optional="YES" attributeType="Binary" allowsExternalBinaryDataStorage="YES" syncable="YES"/>
         <attribute name="imageUrl" optional="YES" attributeType="String" syncable="YES"/>
         <attribute name="isbn" optional="YES" attributeType="String" syncable="YES"/>
         <attribute name="title" optional="YES" attributeType="String" syncable="YES"/>
+        <relationship name="has" optional="YES" toMany="YES" deletionRule="Nullify" destinationEntity="AuthorEntity" inverseName="belongs" inverseEntity="AuthorEntity" syncable="YES"/>
     </entity>
+    <fetchRequest name="requestBook" entity="BookEntity" predicateString="isbn == $isbn"/>
+    <fetchRequest name="requestBooks" entity="BookEntity"/>
     <elements>
-        <element name="BookEntity" positionX="-63" positionY="-18" width="128" height="120"/>
+        <element name="BookEntity" positionX="-63" positionY="-18" width="128" height="135"/>
+        <element name="AuthorEntity" positionX="-63" positionY="18" width="128" height="75"/>
     </elements>
 </model>
