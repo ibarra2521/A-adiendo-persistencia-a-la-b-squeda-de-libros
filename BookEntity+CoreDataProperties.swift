@@ -16,7 +16,6 @@ extension BookEntity {
 
     @NSManaged var title: String?
     @NSManaged var isbn: String?
-    @NSManaged var authors: String?
     @NSManaged var imageUrl: String?
     @NSManaged var image: NSData?
 

@@ -35,9 +35,8 @@ class SearchDetailVC: UIViewController, NSFetchedResultsControllerDelegate, Webs
             if authors.characters.count > 1 {
                 authors = getAuthorString(authors)
             }
-            book?.authors = authors
             lblTitle.text = book?.title
-            lblAuthors.text = book?.authors
+            lblAuthors.text = authors
             txtfSearchBook.text = book?.isbn
             imgvCover.image = UIImage(data: (book?.image)!)
         }
@@ -110,7 +109,6 @@ class SearchDetailVC: UIViewController, NSFetchedResultsControllerDelegate, Webs
         let newEntitySection = NSEntityDescription.insertNewObjectForEntityForName("BookEntity", inManagedObjectContext: managedObjectContext)
         newEntitySection.setValue(lblTitle.text, forKey: "title")
         newEntitySection.setValue(txtfSearchBook.text, forKey: "isbn")
-        newEntitySection.setValue(lblAuthors.text, forKey: "authors")
         newEntitySection.setValue(UIImagePNGRepresentation(imgvCover.image!), forKey: "image")
         newEntitySection.setValue(createAuthorEntity(books[books.count-1].authors), forKey: "has")
         do {

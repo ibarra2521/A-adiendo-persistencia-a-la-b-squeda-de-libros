@@ -349,6 +349,7 @@
 				41854C8D1C25C09900382CEA /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
 

@@ -81,7 +81,7 @@ class MainTVC: UITableViewController, NSFetchedResultsControllerDelegate {
         let book =  fetchedResultsController.objectAtIndexPath(indexPath) as! BookEntity
         cell.textLabel?.text = book.title
         cell.detailTextLabel?.text = book.isbn
-        cell.detailTextLabel?.text = "\(book.authors!) - ISBN: \(book.isbn!)"
+        cell.detailTextLabel?.text = "\(self.getAuthors(book)) ISBN: \(book.isbn!)"
         cell.imageView?.image = UIImage(data: (book.image)!)
         return cell
     }
@@ -150,5 +150,14 @@ class MainTVC: UITableViewController, NSFetchedResultsControllerDelegate {
     func getFetchResultsController() -> NSFetchedResultsController {
         fetchedResultsController = NSFetchedResultsController(fetchRequest: fetchRequest(), managedObjectContext: managedObjectContext, sectionNameKeyPath: nil, cacheName: nil)
         return fetchedResultsController
+    }
+    
+    func getAuthors(book: BookEntity) ->String {
+        let authorEntity = book.valueForKey("has") as! Set<NSObject>
+        var authors = ""
+        for authorTemp in authorEntity {
+            authors += authorTemp.valueForKey("name") as! String + " - "
+        }
+        return authors
     }
 }
