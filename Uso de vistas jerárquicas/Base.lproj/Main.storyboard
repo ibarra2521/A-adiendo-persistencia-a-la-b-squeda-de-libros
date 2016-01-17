@@ -177,7 +177,7 @@
     </scenes>
     <resources>
         <image name="add-basket" width="512" height="512"/>
-        <image name="no found" width="500" height="375"/>
+        <image name="no found" width="217" height="284"/>
     </resources>
     <inferredMetricsTieBreakers>
         <segue reference="dPO-dE-KuV"/>
